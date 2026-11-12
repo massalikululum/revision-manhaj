@@ -36,11 +36,16 @@ function askName(){
 async function init(onRemote){
   if(!ON) return false;
   try{
-    sb=window.supabase.createClient(cfg.url,cfg.key,{auth:{persistSession:true,autoRefreshToken:true}});
+    /* the student page keeps its own session, apart from the teacher dashboard on the same site */
+    sb=window.supabase.createClient(cfg.url,cfg.key,{auth:{persistSession:true,autoRefreshToken:true,storageKey:"massalik-eleve-auth"}});
+    const fresh=async()=>{const r=await sb.auth.signInAnonymously(); if(r.error) throw r.error; return r.data.session};
     let {data:{session}}=await sb.auth.getSession();
-    if(!session){const r=await sb.auth.signInAnonymously(); if(r.error) throw r.error; session=r.data.session}
+    if(!session) session=await fresh();
+    let q=await sb.from("students").select("first_name,class_code").eq("id",session.user.id).maybeSingle();
+    /* a session whose account no longer exists (deleted by the teacher): start a new anonymous one */
+    if(q.error){ await sb.auth.signOut({scope:"local"}); session=await fresh(); q=await sb.from("students").select("first_name,class_code").eq("id",session.user.id).maybeSingle(); if(q.error) throw q.error }
     uid=session.user.id;
-    let {data:me}=await sb.from("students").select("first_name,class_code").eq("id",uid).maybeSingle();
+    let me=q.data;
     if(!me){
       let who=null; try{who=JSON.parse(localStorage.getItem(NKEY)||"null")}catch(e){}
       if(!who) who=await askName();
