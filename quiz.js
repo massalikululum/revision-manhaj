@@ -29,7 +29,7 @@ function home(){
   const chip=(key,n,ar)=>{const r=records[level+"|"+key];return `<button class="unit" data-k="${key}" aria-pressed="${pick===key}"><span class="n">${n}</span><span class="ar" lang="ar">${ar}</span><span class="due ${r?"rec":""}">${r?"Record : "+r:"Pas encore joué"}</span></button>`};
   root.innerHTML=`
     <div class="defi ${d.done?"done":""}">
-      <div><b>☀ Défi du jour</b><span>${d.done?"Relevé ! Reviens demain pour le prochain.":d.ids.length>=4?`${DEFI_N} questions sur les mots qui te résistent · points ×2`:"Révise quelques cartes pour débloquer ton premier défi."}</span></div>
+      <div><b><svg class="ico" viewBox="0 0 18 18" aria-hidden="true" style="vertical-align:-3px;margin-inline-end:6px"><circle cx="9" cy="9" r="3.5"/><path d="M9 1v2M9 15v2M1 9h2M15 9h2M3.3 3.3l1.4 1.4M13.3 13.3l1.4 1.4M3.3 14.7l1.4-1.4M13.3 4.7l1.4-1.4"/></svg>Défi du jour</b><span>${d.done?"Relevé ! Reviens demain pour le prochain.":d.ids.length>=4?`${DEFI_N} questions sur les mots qui te résistent · points ×2`:"Révise quelques cartes pour débloquer ton premier défi."}</span></div>
       ${!d.done&&d.ids.length>=4?'<button class="primary" id="defi">Relever</button>':""}
     </div>
     <div class="panel home">
