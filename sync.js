@@ -20,7 +20,7 @@ function askName(){
       <h2 id="whoT">Bienvenue !</h2>
       <p>Indique ton prénom et ta classe pour que ton professeur puisse suivre tes révisions.</p>
       <label for="whoN">Ton prénom</label><input id="whoN" maxlength="40" autocomplete="given-name" required>
-      <label for="whoC">Ta classe ou ton groupe</label><input id="whoC" maxlength="30" placeholder="Exemple : A1 samedi">
+      <label for="whoC">Ta classe ou ton groupe</label><input id="whoC" maxlength="30" placeholder="Exemple : A1 semaine / week-end">
       <p class="who-err" id="whoE" hidden>Écris ton prénom pour continuer.</p>
       <button class="primary" type="submit">Commencer à réviser</button>
       <small>Seuls ton prénom, ta classe et ta progression sont enregistrés, uniquement pour le suivi par Massalikul'ulum. Tu peux demander leur suppression à ton professeur.</small>
