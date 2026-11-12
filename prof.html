@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Suivi des élèves · Massalikul'ulum</title>
+<link rel="icon" href="logo.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Katibeh&family=Alexandria:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap">
+<style>
+/* Layout: one wide column — brand band, login or filters, summary tiles, student table, class-wide difficult words */
+:root{--bg:#FBEFDE;--surface:#FFFDF8;--ink:#2B2418;--muted:#6B5D48;--line:#E7D7BF;--gold:#8A5D27;--accent:#9A6A2E;--on:#FFFFFF;--soft:#F4E4CA;--bad:#A3503A;--good:#4E6629;--nuit:#020318;--title:#020318;
+  --ui:"Alexandria","Segoe UI",sans-serif;--ar:"Noto Naskh Arabic","Traditional Arabic",serif;--display:"Katibeh",Georgia,serif}
+@media (prefers-color-scheme:dark){:root{--bg:#0D0F2B;--surface:#171A3E;--ink:#EEE6D6;--muted:#B3A78F;--line:#2D3058;--gold:#DDBB7E;--accent:#C9A86C;--on:#0D0F2B;--soft:#2A2840;--bad:#E39A84;--good:#BFD196;--title:#F4EBDA;color-scheme:dark}}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--ui)}
+.wrap{max-width:1080px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-left,0px)) 48px max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+.band{background:var(--nuit);border:1px solid rgba(198,165,107,.35);border-radius:16px;padding:8px 14px;display:flex;align-items:center;gap:10px}
+.band img{height:54px;max-width:70%}
+.band button{margin-inline-start:auto}
+h1,h2{font-family:var(--display);font-weight:400;color:var(--title);margin:0}
+h1{font-size:36px}h2{font-size:26px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px}
+.login{max-width:380px;display:flex;flex-direction:column;gap:8px;margin:0 auto;width:100%}
+label{font-size:13px;font-weight:600}
+input,select{font:500 15px var(--ui);padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.btn{font:600 14px var(--ui);padding:11px 16px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:var(--on);cursor:pointer}
+.btn.ghost{background:transparent;color:#C6A56B;border-color:#C6A56B}
+.err{color:var(--bad);font-size:13px;margin:0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.tile span{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.tile b{font-size:28px;font-variant-numeric:tabular-nums;color:var(--gold)}
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+.filters>div{display:flex;flex-direction:column;gap:4px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;min-width:760px}
+th{font-size:12px;text-align:start;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:8px;border-bottom:1px solid var(--line);cursor:pointer;white-space:nowrap}
+th[aria-sort]::after{content:" ↕";opacity:.5}
+td{padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+tr.row{cursor:pointer}tr.row:hover td{background:var(--soft)}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600}
+.pill.on{background:var(--soft);color:var(--gold)}.pill.off{color:var(--bad);border:1px solid var(--bad)}
+.cells{display:flex;gap:3px}
+.cells i{width:13px;height:13px;border-radius:3px;background:var(--line);position:relative;overflow:hidden}
+.cells i b{position:absolute;inset:auto 0 0 0;background:var(--accent)}
+.ar{font-family:var(--ar);font-weight:700;direction:rtl}
+.hard{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px}
+.hard div{background:var(--bg);border-radius:12px;padding:10px;text-align:center}
+.hard .ar{font-size:22px;display:block}
+.hard small{color:var(--muted)}
+.detail td{background:var(--soft);white-space:normal}
+.note{color:var(--muted);font-size:13px;margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="band"><img src="logo.png" alt="Massalikul'ulum"><button class="btn ghost" id="out" hidden>Se déconnecter</button></div>
+  <h1>Suivi des élèves</h1>
+
+  <form class="card login" id="login" novalidate>
+    <p class="note">Espace réservé aux professeurs.</p>
+    <label for="em">E-mail</label><input id="em" type="email" autocomplete="username" required>
+    <label for="pw">Mot de passe</label><input id="pw" type="password" autocomplete="current-password" required>
+    <p class="err" id="lerr" hidden></p>
+    <button class="btn" type="submit">Se connecter</button>
+  </form>
+
+  <section id="dash" hidden>
+    <div class="tiles" id="tiles"></div>
+    <div class="card" style="margin-top:14px">
+      <div class="filters">
+        <div><label for="fc">Classe</label><select id="fc"><option value="">Toutes</option></select></div>
+        <div><label for="fq">Rechercher un élève</label><input id="fq" placeholder="Prénom"></div>
+        <p class="note" style="margin-inline-start:auto">Touche une ligne pour voir les mots difficiles de l'élève.</p>
+      </div>
+      <div class="tbl" style="margin-top:12px"><table><thead><tr>
+        <th data-k="first_name">Élève</th><th data-k="class_code">Classe</th><th data-k="last">Dernière révision</th>
+        <th data-k="streak">Série</th><th data-k="xp">Niveau</th><th data-k="reviews">Révisions</th><th data-k="words">Mots acquis</th><th>Chapitres 1 → 12</th>
+      </tr></thead><tbody id="rows"></tbody></table></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h2>Les mots qui posent problème</h2>
+      <p class="note">Les mots le plus souvent oubliés par les élèves affichés (classe filtrée).</p>
+      <div class="hard" id="hard"></div>
+    </div>
+  </section>
+</div>
+
+<script src="cards.js" charset="utf-8"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js" charset="utf-8"></script>
+<script>
+const {units:UNITS, cards:CARDS}=window.DATA, $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+if(!SUPA.url||!SUPA.key){document.querySelector("#login").innerHTML='<p class="note">La base de données n\'est pas encore configurée.</p>';throw new Error("config")}
+const sb=window.supabase.createClient(SUPA.url,SUPA.key);
+let all=[], sortK="last", sortDir=-1, open=null;
+const levelOf=xp=>{let n=1;while(50*n*(n+1)<=xp)n++;return n};
+const ago=t=>{if(!t)return "—";const d=Math.floor((Date.now()-new Date(t))/864e5);return d<=0?"Aujourd'hui":d===1?"Hier":`Il y a ${d} jours`};
+
+$("#login").onsubmit=async e=>{
+  e.preventDefault(); const er=$("#lerr"); er.hidden=true;
+  const email=$("#em").value.trim(), password=$("#pw").value;
+  if(!email||!password){er.textContent="Renseigne ton e-mail et ton mot de passe.";er.hidden=false;return}
+  const {error}=await sb.auth.signInWithPassword({email,password});
+  if(error){er.textContent="E-mail ou mot de passe incorrect.";er.hidden=false;return}
+  load();
+};
+$("#out").onclick=async()=>{await sb.auth.signOut();location.reload()};
+
+async function load(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session||session.user.is_anonymous){$("#login").hidden=false;return}
+  $("#login").hidden=true; $("#out").hidden=false; $("#dash").hidden=false;
+  const [st,pr]=await Promise.all([sb.from("students").select("*"),sb.from("progress").select("*")]);
+  if(st.error||pr.error){$("#tiles").innerHTML=`<p class="err">Lecture impossible : ce compte n'est peut-être pas déclaré comme professeur.</p>`;return}
+  const P=Object.fromEntries(pr.data.map(r=>[r.student_id,r]));
+  all=st.data.map(s=>{const p=P[s.id]||{};return {...s,reviews:p.reviews||0,xp:p.xp||0,streak:p.streak||0,words:p.words||0,last:p.last_at,data:p.data||{}}});
+  const classes=[...new Set(all.map(s=>s.class_code).filter(Boolean))].sort();
+  $("#fc").innerHTML='<option value="">Toutes</option>'+classes.map(c=>`<option>${esc(c)}</option>`).join("");
+  render();
+}
+function chapterPct(d,u){const ids=[...u.w,...u.t],srs=d.srs||{};return ids.filter(id=>{const a=srs["r|"+id];return a&&a[0]===2}).length/ids.length}
+function lapses(d){const out={};Object.entries(d.srs||{}).forEach(([k,a])=>{const id=k.slice(2);if(a[4])out[id]=(out[id]||0)+a[4]});return out}
+function render(){
+  const c=$("#fc").value, q=$("#fq").value.trim().toLowerCase();
+  const list=all.filter(s=>(!c||s.class_code===c)&&(!q||s.first_name.toLowerCase().includes(q)))
+    .sort((a,b)=>{const x=a[sortK]??"",y=b[sortK]??"";return (x>y?1:x<y?-1:0)*sortDir});
+  const week=list.filter(s=>s.last&&Date.now()-new Date(s.last)<7*864e5).length;
+  $("#tiles").innerHTML=[["Élèves",list.length],["Actifs cette semaine",week],["Révisions",list.reduce((n,s)=>n+s.reviews,0)],["Mots acquis en moyenne",list.length?Math.round(list.reduce((n,s)=>n+s.words,0)/list.length):0]]
+    .map(([l,v])=>`<div class="tile"><span>${l}</span><b>${v}</b></div>`).join("");
+  $("#rows").innerHTML=list.map(s=>{
+    const active=s.last&&Date.now()-new Date(s.last)<2*864e5;
+    let row=`<tr class="row" data-id="${s.id}"><td><b>${esc(s.first_name)}</b></td><td>${esc(s.class_code||"—")}</td>
+      <td><span class="pill ${active?"on":s.last?"off":""}">${ago(s.last)}</span></td><td>🔥 ${s.streak}</td><td>Niv. ${levelOf(s.xp)}</td><td>${s.reviews}</td><td>${s.words}</td>
+      <td><span class="cells">${UNITS.map(u=>{const p=Math.round(chapterPct(s.data,u)*100);return `<i title="Chapitre ${u.id} : ${p} %"><b style="height:${p}%"></b></i>`}).join("")}</span></td></tr>`;
+    if(open===s.id){const l=lapses(s.data),top=Object.entries(l).sort((a,b)=>b[1]-a[1]).slice(0,8);
+      row+=`<tr class="detail"><td colspan="8">${top.length?`<b>Mots les plus oubliés :</b> ${top.map(([id,n])=>`<span class="ar">${esc(CARDS[id]?.ar||id)}</span> (${n})`).join(" · ")}`:"Aucun mot oublié pour l'instant."}</td></tr>`}
+    return row}).join("")||`<tr><td colspan="8" class="note">Aucun élève pour l'instant. Ils apparaîtront ici dès leur première révision.</td></tr>`;
+  document.querySelectorAll("tr.row").forEach(r=>r.onclick=()=>{open=open===r.dataset.id?null:r.dataset.id;render()});
+  const agg={}; list.forEach(s=>Object.entries(lapses(s.data)).forEach(([id,n])=>{agg[id]=(agg[id]||0)+n}));
+  const top=Object.entries(agg).sort((a,b)=>b[1]-a[1]).slice(0,15);
+  $("#hard").innerHTML=top.length?top.map(([id,n])=>`<div><span class="ar" lang="ar">${esc(CARDS[id]?.ar||id)}</span><small>${n} oubli${n>1?"s":""}</small></div>`).join(""):`<p class="note">Rien à signaler pour l'instant.</p>`;
+}
+document.querySelectorAll("th[data-k]").forEach(th=>{th.setAttribute("aria-sort","none");th.onclick=()=>{const k=th.dataset.k;sortDir=sortK===k?-sortDir:-1;sortK=k;render()}});
+$("#fc").onchange=render; $("#fq").oninput=render;
+load();
+</script>
+</body>
+</html>
