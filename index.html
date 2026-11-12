@@ -416,6 +416,12 @@ h1,h2,.brand h1{font-family:var(--display);font-weight:400;color:var(--title);le
 .medals small{font-size:11px;color:var(--muted)}
 .toast .ic{display:grid;place-items:center;color:#E9C98A}
 .toast .ic .ico{width:22px;height:24px}
+
+/* native dropdown lists: readable in both themes */
+select{color-scheme:light dark}
+select option{background:var(--surface);color:var(--ink)}
+:root[data-mode="nuit"] select{color-scheme:dark}
+:root[data-mode="jour"] select{color-scheme:light}
 </style>
 
 </head>
