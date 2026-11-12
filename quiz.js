@@ -37,10 +37,10 @@ function home(){
       <button class="lvl" data-l="easy" aria-pressed="${level==="easy"}"><b>Facile</b><span>Lis le mot, choisis l'image</span></button>
       <button class="lvl" data-l="normal" aria-pressed="${level==="normal"}"><b>Normal</b><span>Regarde l'image, choisis le mot</span></button>
     </div>
-    <div class="pickLbl">Quiz chrono · choisis ton chapitre</div>
+    <div class="pickLbl">Chapitre</div>
     <div class="shelf">${chip("all","Les 3 chapitres","١ ، ٢ ، ٣")}${CHAPTERS.map(id=>{const u=UNITS.find(x=>x.id===id);return chip(id,"Chapitre "+id,u.ar)}).join("")}</div>
-    <p class="rules">90 secondes. +1 point par bonne réponse, ×2 après 5 d'affilée. Les erreurs reviennent plus tard.</p>
-    <button class="primary" id="go">Commencer</button></div>`;
+    <button class="primary" id="go">Commencer · 90 s</button>
+    <details class="rules"><summary>Règles du quiz</summary><p>+1 point par bonne réponse, ×2 après 5 d'affilée. Les erreurs reviennent un peu plus tard dans la partie.</p></details></div>`;
   $$(".unit").forEach(b=>b.onclick=()=>{pick=b.dataset.k==="all"?"all":+b.dataset.k;home()});
   const sel=$('.unit[aria-pressed="true"]'), strip=$(".shelf"); if(sel&&strip) strip.scrollLeft=sel.offsetLeft-strip.offsetLeft-8;
   $$(".lvl").forEach(b=>b.onclick=()=>{level=b.dataset.l;try{localStorage.setItem(RKEY+"-level",level)}catch(e){};home()});

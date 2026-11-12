@@ -309,13 +309,66 @@ h1,h2,.brand h1{font-family:var(--display);font-weight:400;color:var(--title);le
 .toast [lang="ar"]{font-family:var(--ar);font-weight:700;color:var(--or-clair)}
 @media (prefers-reduced-motion:no-preference){.toast{animation:tin .3s ease-out}.toast.out{opacity:0;transition:opacity .3s}@keyframes tin{from{opacity:0;transform:translate(-50%,10px)}}}
 @media (max-width:480px){.pcard .k{font-size:20px}.gchip{padding:6px 8px;font-size:13px}.path .lbl span{font-size:13px}}
+/* phone layout: tabs at the bottom, one-line header, compact chapter picker */
+.band .gbar{flex:1;min-width:0;justify-content:flex-end}
+.band .gchip{background:transparent;border-color:rgba(198,165,107,.35);color:#F4EBDA}
+.band .gchip.streak.on{color:#E9C98A;border-color:#C6A56B}
+.band .gchip.lvl span{color:#E9C98A}
+.band .gchip.goal .r0{stroke:rgba(198,165,107,.25)}
+.band .gchip.goal .r1{stroke:#C6A56B}
+.band .xp{background:rgba(198,165,107,.25)}
+.band .xp i{background:#C6A56B}
+.band .mode{margin-inline-start:0;flex:0 0 auto}
+.chapsel{display:none}
+@media (max-width:700px){
+  header .brand{display:none}
+  #views{position:fixed;left:0;right:0;bottom:0;z-index:40;margin:0;border-radius:0;border:0;border-top:1px solid var(--line);background:var(--surface);
+    padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));justify-content:space-around;gap:4px;flex-wrap:nowrap;box-shadow:0 -8px 24px -18px var(--shadow)}
+  #views button{flex:1;padding:12px 4px;font-size:14px;border-radius:12px}
+  .wrap{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px));gap:12px}
+  .toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  .gchip.lvl{display:none}
+  .band{padding:6px 8px 6px 10px;gap:8px}
+  .band .logo{height:44px!important;max-width:48%;margin:-4px 0 -4px -6px!important}
+  .band .gchip{padding:5px 8px;font-size:13px}
+  .band .mode{width:38px;height:38px}
+  #pickLbl,#shelf{display:none!important}
+  .chapsel{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px 12px}
+  .chapsel select{flex:1;min-width:0;font:600 15px var(--ui);color:var(--ink);background:transparent;border:0;padding:8px 0}
+  .chapsel span{font-size:12px;white-space:nowrap;color:var(--muted)}
+  .chapsel span b{color:var(--again)}
+  .chapsel span.ok{color:var(--good);font-weight:600}
+  .howto{padding:8px 12px}
+  .card{min-height:330px}
+}
+/* progress tiles: one per line on phones */
+.pcard>div{display:flex;flex-direction:column;gap:2px}
+@media (max-width:520px){
+  .pgrid{grid-template-columns:1fr}
+  .pgrid .pcard{flex-direction:row;align-items:center;gap:14px;text-align:start;padding:12px 14px}
+  .pgrid .pcard .k{min-width:70px;text-align:center;font-size:22px}
+}
+/* quiz home: rules folded */
+#quizApp details.rules{font-size:13px;color:var(--muted)}
+#quizApp details.rules summary{cursor:pointer;font-weight:600}
+#quizApp details.rules p{margin:6px 0 0}
+
+@media (max-width:700px){
+  .card{min-height:280px}
+  /* answer buttons stay under the thumb, just above the bottom tabs */
+  .study>.answers,.study>#show{position:sticky;bottom:calc(74px + env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 -10px 18px -6px var(--bg)}
+  .study>.answers{background:var(--bg);padding-top:6px;border-radius:14px}
+}
+/* small phones: the round emblem alone, so the streak and the daily goal fit on the same line */
+@media (max-width:430px){
+  .band .logo{height:42px!important;width:42px;max-width:none;object-fit:cover;object-position:left center;margin:0!important;border-radius:50%}
+}
 </style>
 
 </head>
 <body>
 <div class="wrap">
-  <div class="band"><img class="logo" src="logo.png" alt="Massalikul'ulum"><button class="mode" id="mode" type="button" aria-label="Changer de thème"></button></div>
-  <div class="gbar" id="gbar"></div>
+  <div class="band"><img class="logo" src="logo.png" alt="Massalikul'ulum"><div class="gbar" id="gbar"></div><button class="mode" id="mode" type="button" aria-label="Changer de thème"></button></div>
   <header>
     <div class="brand">
       <small>المنهج العالمي · A1</small>
@@ -341,6 +394,7 @@ h1,h2,.brand h1{font-family:var(--display);font-weight:400;color:var(--title);le
 
   <div class="pickLbl" id="pickLbl">Choisis ton chapitre</div>
   <section class="shelf" id="shelf" aria-label="Chapitres"></section>
+  <div class="chapsel" id="chapWrap"><select id="chapSel" aria-label="Choisis ton chapitre"></select><span id="chapDue"></span></div>
 
   <main id="view"></main>
   <section id="quizApp" hidden></section>
@@ -437,6 +491,11 @@ function renderShelf(){
   const sel=$('#shelf .unit[aria-pressed="true"]'), strip=$("#shelf");
   if(sel&&renderShelf.last!==ui.unit){strip.scrollLeft=sel.offsetLeft-strip.offsetLeft-8;renderShelf.last=ui.unit}
   $$("#shelf .unit").forEach(b=>b.onclick=()=>{ui.unit=+b.dataset.u;ui.cur=null;ui.flipped=false;ui.done=0;ui.seen=0;render()});
+  /* phones get a compact picker instead of the tile strip */
+  const s=$("#chapSel"), c=counts();
+  s.innerHTML=UNITS.map(u=>`<option value="${u.id}" ${u.id===ui.unit?"selected":""}>Chapitre ${u.id} · ${u.ar}</option>`).join("");
+  $("#chapDue").className=c.todo?"":"ok"; $("#chapDue").innerHTML=c.todo?`<b>${c.todo}</b> à revoir`:"✓ à jour";
+  s.onchange=()=>{ui.unit=+s.value;ui.cur=null;ui.flipped=false;ui.done=0;ui.seen=0;render()};
 }
 
 function renderStudy(){
@@ -474,7 +533,9 @@ function renderStudy(){
   if(!ui.flipped){$("#card").onclick=flip;$("#show").onclick=flip}
   else{$("#no").onclick=()=>answer(false);$("#yes").onclick=()=>answer(true)}
 }
-function flip(){ if(!ui.flipped){ui.flipped=true;render()} }
+function flip(){ if(!ui.flipped){ui.flipped=true;render();
+  /* on phones the answer buttons can sit under the bottom tabs: bring them into view */
+  const a=$(".answers"), nav=$("#views"); if(a){const limit=(getComputedStyle(nav).position==="fixed"?nav.getBoundingClientRect().top:innerHeight)-12, d=a.getBoundingClientRect().bottom-limit; if(d>0) window.scrollBy({top:d,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})}} }
 function answer(knew){
   put(ui.cur,next(st(ui.cur),knew)); P.reviews++; P.last=Date.now(); Gami.onReview(knew);
   if(knew) ui.done++; ui.seen=(ui.seen||0)+1;
@@ -520,7 +581,7 @@ function renderReset(){
 function render(){
   $$("#views button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===ui.view));
   const v=ui.view, study=v==="study";
-  $("#shelf").hidden=!study; $("#pickLbl").hidden=!study; $("#howto").hidden=!study;
+  $("#shelf").hidden=!study; $("#pickLbl").hidden=!study; $("#howto").hidden=!study; $("#chapWrap").hidden=!study;
   $("#view").hidden=!(study||v==="students"); $("#quizApp").hidden=v!=="quiz"; $("#progress").hidden=v!=="progress";
   if(study){renderShelf();renderStudy()} else if(v==="students") renderStudents();
   else if(v==="progress") Gami.renderProgress($("#progress"));

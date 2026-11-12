@@ -107,9 +107,9 @@ function renderProgress(el){
     <div class="pcard lvlcard"><div class="big" lang="ar">${title(n)}</div><div>Niveau <b>${n}</b> · ${g.xp} points</div>
       <span class="xp big"><i style="width:${Math.round((g.xp-lo)/(hi-lo)*100)}%"></i></span><small>Encore ${hi-g.xp} points pour le niveau ${n+1}</small></div>
     <div class="pgrid">
-      <div class="pcard"><b class="k">🔥 ${s.streak}</b><span>jour${s.streak>1?"s":""} d'affilée</span><small>${g.joker===weekKey()?"Joker de la semaine utilisé":"1 joker disponible cette semaine"}</small></div>
-      <div class="pcard"><b class="k">${Math.min(g.today,GOAL)}/${GOAL}</b><span>révisions aujourd'hui</span><small>${g.today>=GOAL?"Objectif atteint ✓":"Cartes et bonnes réponses au quiz comptent"}</small></div>
-      <div class="pcard"><b class="k">${s.words}</b><span>mots acquis</span><small>sur ${Object.keys(CARDS).length}</small></div>
+      <div class="pcard"><b class="k">🔥 ${s.streak}</b><div><span>jour${s.streak>1?"s":""} d'affilée</span><small>${g.joker===weekKey()?"Joker utilisé cette semaine":"1 joker cette semaine"}</small></div></div>
+      <div class="pcard"><b class="k">${Math.min(g.today,GOAL)}/${GOAL}</b><div><span>révisions aujourd'hui</span><small>${g.today>=GOAL?"Objectif atteint ✓":"Cartes et quiz comptent"}</small></div></div>
+      <div class="pcard"><b class="k">${s.words}</b><div><span>mots acquis</span><small>sur ${Object.keys(CARDS).length}</small></div></div>
     </div>
     <h2>Ton parcours</h2>
     <p class="note">Un chapitre devient doré quand tu en maîtrises 80 %. Touche un chapitre pour le réviser.</p>
