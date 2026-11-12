@@ -1,3 +1,10 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="logo.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Mufradat Al-Manhaj A1</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -293,6 +300,8 @@ h1,h2,.brand h1{font-family:var(--display);font-weight:400;color:var(--title);le
 @media (max-width:480px){.pcard .k{font-size:20px}.gchip{padding:6px 8px;font-size:13px}.path .lbl span{font-size:13px}}
 </style>
 
+</head>
+<body>
 <div class="wrap">
   <div class="band"><img class="logo" src="logo.png" alt="Massalikul'ulum"><button class="mode" id="mode" type="button" aria-label="Changer de thème"></button></div>
   <div class="gbar" id="gbar"></div>
@@ -566,3 +575,6 @@ async function flush(){
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change",paint); paint();
 })();
 </script>
+
+</body>
+</html>
